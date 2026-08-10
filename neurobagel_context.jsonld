@@ -1,0 +1,132 @@
+{
+  "@context": {
+    "rdf": "http://www.w3.org/1999/02/22-rdf-syntax-ns#",
+    "rdfs": "http://www.w3.org/2000/01/rdf-schema#",
+    "xsd": "http://www.w3.org/2001/XMLSchema#",
+    "dct": "http://purl.org/dc/terms/",
+    "schema": "http://schema.org/",
+    "prov": "http://www.w3.org/ns/prov#",
+    "snomed": "http://snomed.info/id/",
+    "ncit": "http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#",
+
+    "nb": "http://neurobagel.org/vocab#",
+    "np": "http://neurobagel.org/vocab/phenotype#",
+    "nidm": "http://purl.org/nidash/nidm#",
+
+    "type": "@type",
+    "id": "@id",
+
+    "Dataset": "nb:Dataset",
+    "Subject": "nb:Subject",
+    "Session": "nb:Session",
+    "PhenotypicSession": "nb:PhenotypicSession",
+    "ImagingSession": "nb:ImagingSession",
+    "Acquisition": "nb:Acquisition",
+    "Image": "nb:Image",
+    "Assessment": "nb:Assessment",
+    "Diagnosis": "nb:Diagnosis",
+    "Sex": "nb:Sex",
+    "Age": "nb:Age",
+    "CompletedPipeline": "nb:CompletedPipeline",
+    "SoftwareAgent": "nb:SoftwareAgent",
+    "PipelineParameter": "nb:PipelineParameter",
+    "DerivativeCollection": "nb:DerivativeCollection",
+    "Measurement": "nb:Measurement",
+
+    "hasSubject": {
+      "@id": "nb:hasSubject",
+      "@type": "@id"
+    },
+    "hasSession": {
+      "@id": "nb:hasSession",
+      "@type": "@id"
+    },
+    "hasAcquisition": {
+      "@id": "nb:hasAcquisition",
+      "@type": "@id"
+    },
+    "hasImage": {
+      "@id": "nb:hasImage",
+      "@type": "@id"
+    },
+    "hasAssessment": {
+      "@id": "nb:hasAssessment",
+      "@type": "@id"
+    },
+    "hasDiagnosis": {
+      "@id": "nb:hasDiagnosis",
+      "@type": "@id"
+    },
+    "hasSex": {
+      "@id": "nb:hasSex",
+      "@type": "@id"
+    },
+    "hasAge": {
+      "@id": "nb:hasAge",
+      "@type": "@id"
+    },
+    "hasParameter": {
+      "@id": "nb:hasParameter",
+      "@type": "@id"
+    },
+    "generatedBy": {
+      "@id": "nb:generatedBy",
+      "@type": "@id"
+    },
+    "hasOutput": {
+      "@id": "nb:hasOutput",
+      "@type": "@id"
+    },
+    "hasMeasurement": {
+      "@id": "nb:hasMeasurement",
+      "@type": "@id"
+    },
+
+    "identifier": {
+      "@id": "nb:identifier",
+      "@type": "@id"
+    },
+    "label": "rdfs:label",
+    "description": "dct:description",
+    "modality": {
+      "@id": "nb:modality",
+      "@type": "@id"
+    },
+    "contrastType": {
+      "@id": "nb:contrastType",
+      "@type": "@id"
+    },
+    "acquisitionModality": {
+      "@id": "nb:acquisitionModality",
+      "@type": "@id"
+    },
+    "path": "nb:path",
+    "format": "nb:format",
+    "tool": {
+      "@id": "nb:tool",
+      "@type": "@id"
+    },
+    "score": "nb:score",
+    "assesses": {
+      "@id": "nb:assesses",
+      "@type": "@id"
+    },
+    "value": "nb:value",
+    "unit": "nb:unit",
+    "code": {
+      "@id": "nb:code",
+      "@type": "@id"
+    },
+    "name": "nb:name",
+    "version": "nb:version",
+    "structure": {
+      "@id": "nb:structure",
+      "@type": "@id"
+    },
+    "laterality": "nb:laterality",
+    "measureType": {
+      "@id": "nb:measureType",
+      "@type": "@id"
+    }
+  }
+}
