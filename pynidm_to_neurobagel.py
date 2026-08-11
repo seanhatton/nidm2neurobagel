@@ -6,14 +6,13 @@ Converts PyNIDM RDF (Turtle format) into Neurobagel-compatible RDF
 using a SPARQL CONSTRUCT query executed with rdflib.
 
 Supported output formats:
-    - turtle   (default)  Serialize as Turtle
-    - json-ld              Serialize as JSON-LD (optionally framed with a context)
+    - json-ld (default)  Serialize as JSON-LD (optionally framed with a context)
+    - turtle             Serialize as Turtle
 
 Usage examples:
     python pynidm_to_neurobagel.py input.ttl
-    python pynidm_to_neurobagel.py input.ttl -o out.ttl
-    python pynidm_to_neurobagel.py input.ttl -o out.jsonld --format json-ld \
-        --context neurobagel_context.jsonld
+    python pynidm_to_neurobagel.py input.ttl -o out.jsonld
+    python pynidm_to_neurobagel.py input.ttl -o out.jsonld --context neurobagel_context.jsonld
 """
 
 import argparse
@@ -126,8 +125,8 @@ def main(argv=None):
     parser.add_argument("input", help="Input PyNIDM RDF file (.ttl or .jsonld)")
     parser.add_argument("-o", "--output", help="Output file path (default: stdout)")
     parser.add_argument("--format", choices=["turtle", "json-ld", "n3", "rdfxml"],
-                        default="turtle",
-                        help="Output RDF serialization format (default: turtle)")
+                        default="json-ld",
+                        help="Output RDF serialization format (default: json-ld)")
     parser.add_argument("--query", help="Path to a custom CONSTRUCT query .sparql file")
     parser.add_argument("--context", help="JSON-LD context file to embed in JSON-LD output")
     parser.add_argument("-v", "--verbose", action="store_true", help="Enable debug logging")
