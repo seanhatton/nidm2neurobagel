@@ -1,132 +1,96 @@
 {
   "@context": {
-    "rdf": "http://www.w3.org/1999/02/22-rdf-syntax-ns#",
-    "rdfs": "http://www.w3.org/2000/01/rdf-schema#",
-    "xsd": "http://www.w3.org/2001/XMLSchema#",
-    "dct": "http://purl.org/dc/terms/",
-    "schema": "http://schema.org/",
-    "prov": "http://www.w3.org/ns/prov#",
-    "snomed": "http://snomed.info/id/",
-    "ncit": "http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#",
-
-    "nb": "http://neurobagel.org/vocab#",
-    "np": "http://neurobagel.org/vocab/phenotype#",
-    "nidm": "http://purl.org/nidash/nidm#",
-
-    "type": "@type",
-    "id": "@id",
-
-    "Dataset": "nb:Dataset",
-    "Subject": "nb:Subject",
-    "Session": "nb:Session",
-    "PhenotypicSession": "nb:PhenotypicSession",
-    "ImagingSession": "nb:ImagingSession",
     "Acquisition": "nb:Acquisition",
-    "Image": "nb:Image",
     "Assessment": "nb:Assessment",
-    "Diagnosis": "nb:Diagnosis",
-    "Sex": "nb:Sex",
-    "Age": "nb:Age",
+    "Bagel": "nb:Bagel",
+    "BaseModel": "nb:BaseModel",
     "CompletedPipeline": "nb:CompletedPipeline",
-    "SoftwareAgent": "nb:SoftwareAgent",
-    "PipelineParameter": "nb:PipelineParameter",
-    "DerivativeCollection": "nb:DerivativeCollection",
-    "Measurement": "nb:Measurement",
-
-    "hasSubject": {
-      "@id": "nb:hasSubject",
-      "@type": "@id"
+    "ControlledTerm": "nb:ControlledTerm",
+    "Dataset": "nb:Dataset",
+    "Diagnosis": "nb:Diagnosis",
+    "Image": "nb:Image",
+    "ImagingSession": "nb:ImagingSession",
+    "PhenotypicSession": "nb:PhenotypicSession",
+    "Pipeline": "nb:Pipeline",
+    "Session": "nb:Session",
+    "Sex": "nb:Sex",
+    "Subject": "nb:Subject",
+    "SubjectGroup": "nb:SubjectGroup",
+    "hasAccessEmail": {
+      "@id": "nb:hasAccessEmail"
     },
-    "hasSession": {
-      "@id": "nb:hasSession",
-      "@type": "@id"
+    "hasAccessInstructions": {
+      "@id": "nb:hasAccessInstructions"
+    },
+    "hasAccessLink": {
+      "@id": "nb:hasAccessLink"
+    },
+    "hasAccessType": {
+      "@id": "nb:hasAccessType"
     },
     "hasAcquisition": {
-      "@id": "nb:hasAcquisition",
-      "@type": "@id"
-    },
-    "hasImage": {
-      "@id": "nb:hasImage",
-      "@type": "@id"
-    },
-    "hasAssessment": {
-      "@id": "nb:hasAssessment",
-      "@type": "@id"
-    },
-    "hasDiagnosis": {
-      "@id": "nb:hasDiagnosis",
-      "@type": "@id"
-    },
-    "hasSex": {
-      "@id": "nb:hasSex",
-      "@type": "@id"
+      "@id": "nb:hasAcquisition"
     },
     "hasAge": {
-      "@id": "nb:hasAge",
-      "@type": "@id"
+      "@id": "nb:hasAge"
     },
-    "hasParameter": {
-      "@id": "nb:hasParameter",
-      "@type": "@id"
+    "hasAssessment": {
+      "@id": "nb:hasAssessment"
     },
-    "generatedBy": {
-      "@id": "nb:generatedBy",
-      "@type": "@id"
+    "hasAuthors": {
+      "@id": "nb:hasAuthors"
     },
-    "hasOutput": {
-      "@id": "nb:hasOutput",
-      "@type": "@id"
+    "hasCompletedPipeline": {
+      "@id": "nb:hasCompletedPipeline"
     },
-    "hasMeasurement": {
-      "@id": "nb:hasMeasurement",
-      "@type": "@id"
+    "hasContrastType": {
+      "@id": "nb:hasContrastType"
     },
-
-    "identifier": {
-      "@id": "nb:identifier",
-      "@type": "@id"
+    "hasDiagnosis": {
+      "@id": "nb:hasDiagnosis"
     },
-    "label": "rdfs:label",
-    "description": "dct:description",
-    "modality": {
-      "@id": "nb:modality",
-      "@type": "@id"
+    "hasFilePath": {
+      "@id": "nb:hasFilePath"
     },
-    "contrastType": {
-      "@id": "nb:contrastType",
-      "@type": "@id"
+    "hasKeywords": {
+      "@id": "nb:hasKeywords"
     },
-    "acquisitionModality": {
-      "@id": "nb:acquisitionModality",
-      "@type": "@id"
+    "hasLabel": {
+      "@id": "nb:hasLabel"
     },
-    "path": "nb:path",
-    "format": "nb:format",
-    "tool": {
-      "@id": "nb:tool",
-      "@type": "@id"
+    "hasPipelineName": {
+      "@id": "nb:hasPipelineName"
     },
-    "score": "nb:score",
-    "assesses": {
-      "@id": "nb:assesses",
-      "@type": "@id"
+    "hasPipelineVersion": {
+      "@id": "nb:hasPipelineVersion"
     },
-    "value": "nb:value",
-    "unit": "nb:unit",
-    "code": {
-      "@id": "nb:code",
-      "@type": "@id"
+    "hasPortalURI": {
+      "@id": "nb:hasPortalURI"
     },
-    "name": "nb:name",
-    "version": "nb:version",
-    "structure": {
-      "@id": "nb:structure",
-      "@type": "@id"
+    "hasReferencesAndLinks": {
+      "@id": "nb:hasReferencesAndLinks"
     },
-    "laterality": "nb:laterality",
-    "measureType": {
-      "@id": "nb:measureType",
-      "@type": "@id"
-    }
+    "hasRepositoryURL": {
+      "@id": "nb:hasRepositoryURL"
+    },
+    "hasSamples": {
+      "@id": "nb:hasSamples"
+    },
+    "hasSession": {
+      "@id": "nb:hasSession"
+    },
+    "hasSex": {
+      "@id": "nb:hasSex"
+    },
+    "identifier": "@id",
+    "isSubjectGroup": {
+      "@id": "nb:isSubjectGroup"
+    },
+    "nb": "http://neurobagel.org/vocab/",
+    "ncit": "http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#",
+    "nidm": "http://purl.org/nidash/nidm#",
+    "np": "https://github.com/nipoppy/pipeline-catalog/tree/main/processing/",
+    "schemaKey": "@type",
+    "snomed": "http://purl.bioontology.org/ontology/SNOMEDCT/"
   }
 }

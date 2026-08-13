@@ -1,353 +1,125 @@
+# =========================================================================== #
+# Neurobagel SPARQL CONSTRUCT Mapping Query (Updated & Optimised)
+#
+# Generates Neurobagel graph structures from NIDM entities.
+# =========================================================================== #
+
 PREFIX nidm: <http://purl.org/nidash/nidm#>
 PREFIX prov: <http://www.w3.org/ns/prov#>
-PREFIX niiri: <http://purl.org/nidash/niiri#>
-PREFIX bids: <http://purl.org/nidash/bids#>
-PREFIX dct: <http://purl.org/dc/terms/>
+PREFIX sio:  <http://semanticscience.org/ontology/sio.owl#>
+PREFIX sio_res: <http://semanticscience.org/resource/>
+PREFIX dct:  <http://purl.org/dc/terms/>
 PREFIX dctypes: <http://purl.org/dc/dcmitype/>
-PREFIX nfo: <http://www.semanticdesktop.org/ontologies/2007/03/22/nfo#>
-PREFIX sio: <http://semanticscience.org/resource/>
-PREFIX onli: <http://purl.org/ontology/onli#>
-PREFIX reproschema: <http://purl.org/reproschema#>
-PREFIX ilx: <http://uri.interlex.org/base/ilx_>
-PREFIX fsl: <http://purl.org/nidash/fsl#>
-PREFIX freesurfer: <http://purl.org/nidash/freesurfer#>
-PREFIX fs: <http://purl.org/nidash/freesurfer#>
-PREFIX ants: <http://purl.org/nidash/ants#>
-PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
-PREFIX crypto: <http://id.loc.gov/vocabulary/preservation/cryptographicHashFunction#>
-PREFIX dcat: <http://www.w3.org/ns/dcat#>
-PREFIX dicom: <http://purl.org/nidash/dicom#>
-PREFIX ndar: <http://purl.org/ndar#>
+PREFIX nfo:  <http://www.semanticdesktop.org/ontologies/2007/03/22/nfo#>
+PREFIX onli: <http://neurolog.unice.fr/ontoneurolog/v3.0/instrument.owl#>
+PREFIX ndar: <https://ndar.nih.gov/api/datadictionary/v2/dataelement/>
 PREFIX ncicb: <http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#>
-PREFIX obo: <http://purl.obolibrary.org/obo/>
-PREFIX pato: <http://purl.obolibrary.org/obo/pato#>
-PREFIX schema: <http://schema.org/>
-PREFIX vc: <http://www.w3.org/2018/credentials#>
-PREFIX xml: <http://www.w3.org/XML/1998/namespace>
-PREFIX scr: <http://purl.org/scr#>
-PREFIX nlx: <http://uri.neuinfo.org/nif/nlx/>
-PREFIX birnlex: <http://purl.org/nidash/birnlex#>
-PREFIX uberon: <http://purl.obolibrary.org/obo/UBERON_>
-PREFIX nb: <http://neurobagel.org/vocab#>
-PREFIX snomed: <http://snomed.info/id/>
-PREFIX np: <http://neurobagel.org/vocab/phenotype#>
-PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX snomed: <http://purl.bioontology.org/ontology/SNOMEDCT/>
+PREFIX nb:   <http://neurobagel.org/vocab/>
+PREFIX np:   <https://github.com/nipoppy/pipeline-catalog/tree/main/processing/>
 PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX foaf: <http://xmlns.com/foaf/0.1/>
 
 CONSTRUCT {
-  # ============================================================
-  # PHASE 1: Dataset from Project
-  # ============================================================
-  ?dataset a nb:Dataset ;
-           rdfs:label ?projectLabel ;
-           dct:description ?projectDescription ;
-           nb:hasSubject ?subject .
+    # Dataset
+    ?dataset a nb:Dataset ;
+        nb:hasLabel ?datasetTitle ;
+        nb:hasSamples ?subjectNode .
 
-  # ============================================================
-  # PHASE 2: Subjects from Persons via Qualified Associations
-  # ============================================================
-  ?subject a nb:Subject ;
-           nb:identifier ?subjectId ;
-           rdfs:label ?personLabel ;
-           nb:hasSession ?session ;
-           nb:hasSex ?sex ;
-           nb:hasAge ?age ;
-           nb:hasDiagnosis ?diagnosis .
+    # Subject
+    ?subjectNode a nb:Subject ;
+        nb:hasLabel ?subjectLabel ;
+        nb:hasSession ?phenoSessionNode , ?imagingSessionNode .
 
-  ?sex a nb:Sex ;
-       rdfs:label ?sexLabel ;
-       nb:value ?sexValue .
+    # Phenotypic Session
+    ?phenoSessionNode a nb:PhenotypicSession ;
+        nb:hasLabel ?sessionLabel ;
+        nb:hasAge ?ageVal ;
+        nb:hasSex ?sexTermNode ;
+        nb:hasAssessment ?assessTermNode .
 
-  ?age a nb:Age ;
-       rdfs:label "age" ;
-       nb:value ?ageValue ;
-       nb:unit "years" .
+    # Imaging Session
+    ?imagingSessionNode a nb:ImagingSession ;
+        nb:hasLabel ?sessionLabel ;
+        nb:hasAcquisition ?acqNode .
 
-  ?diagnosis a nb:Diagnosis ;
-             rdfs:label ?dxLabel ;
-             nb:value ?dxValue ;
-             nb:code ?dxCode .
+    # Acquisition
+    ?acqNode a nb:Acquisition ;
+        nb:hasContrastType ?contrastTermNode .
 
-  # ============================================================
-  # PHASE 3: Sessions (PhenotypicSession or ImagingSession)
-  # ============================================================
-  ?session a ?sessionType ;
-           rdfs:label ?sessionLabel ;
-           dct:description ?sessionDescription ;
-           nb:hasAcquisition ?acquisition ;
-           nb:hasAssessment ?assessment .
-
-  # ============================================================
-  # PHASE 4: Acquisitions and Images from Imaging AcquisitionObjects
-  # ============================================================
-  ?acquisition a nb:Acquisition ;
-               rdfs:label ?acqLabel ;
-               nb:modality ?modality ;
-               nb:contrastType ?contrastType ;
-               nb:hasImage ?image .
-
-  ?image a nb:Image ;
-         rdfs:label ?imageLabel ;
-         nb:path ?imagePath ;
-         nb:format ?imageFormat ;
-         nb:contrastType ?contrastType ;
-         nb:acquisitionModality ?modality .
-
-  # ============================================================
-  # PHASE 5: Assessments from Assessment AcquisitionObjects
-  # ============================================================
-  ?assessment a nb:Assessment ;
-              rdfs:label ?assessLabel ;
-              nb:tool ?assessTool ;
-              nb:score ?assessScore ;
-              nb:assesses ?assessesConstruct .
-
-  # ============================================================
-  # PHASE 6: Pipelines from Derivatives with Provenance
-  # ============================================================
-  ?pipeline a nb:CompletedPipeline ;
-            rdfs:label ?pipelineLabel ;
-            nb:name ?pipelineName ;
-            nb:version ?pipelineVersion ;
-            nb:hasParameter ?param ;
-            nb:generatedBy ?softwareAgent ;
-            nb:hasOutput ?derivativeCollection .
-
-  ?softwareAgent a nb:SoftwareAgent ;
-                 rdfs:label ?softwareLabel ;
-                 nb:name ?softwareName ;
-                 nb:version ?softwareVersion .
-
-  ?param a nb:PipelineParameter ;
-         rdfs:label ?paramLabel ;
-         nb:value ?paramValue .
-
-  ?derivativeCollection a nb:DerivativeCollection ;
-                        rdfs:label ?derivLabel ;
-                        nb:hasMeasurement ?measurement .
-
-  ?measurement a nb:Measurement ;
-               rdfs:label ?measLabel ;
-               nb:value ?measValue ;
-               nb:unit ?measUnit ;
-               nb:structure ?measStructure ;
-               nb:laterality ?measLaterality ;
-               nb:measureType ?measType .
+    # Controlled term nodes
+    ?sexTermNode a nb:Sex .
+    ?assessTermNode a nb:Assessment .
+    ?contrastTermNode a nb:Image .
 }
 WHERE {
-  # ==========================================================================
-  # PHASE 1 & 2: Dataset from Project, Subjects via qualified associations
-  # ==========================================================================
-  ?project a nidm:Project .
-  OPTIONAL { ?project dctypes:title ?projectLabel . }
-  OPTIONAL { ?project dctypes:title ?projectLabel . }
-  OPTIONAL { ?project rdfs:label ?projectLabel . }
-  OPTIONAL { ?project dct:description ?projectDescription . }
-  BIND(IRI(CONCAT("http://neurobagel.org/dataset/",
-                  REPLACE(STR(?project), ".*[/#]([^/#]+)$", "$1"))) AS ?dataset)
+    # 1. Project / Dataset
+    ?project a nidm:Project .
+    OPTIONAL { ?project dctypes:title ?projTitle . }
+    OPTIONAL { ?project rdfs:label ?projTitle . }
+    BIND(COALESCE(?projTitle, "Neurobagel Dataset") AS ?datasetTitle)
+    BIND(IRI(CONCAT("http://neurobagel.org/vocab/", REPLACE(STR(?project), "^.*[/#]", ""))) AS ?dataset)
 
-  # ==========================================================================
-  # PHASE 3: Sessions (linked to Project via dct:isPartOf / dct:isPartOf)
-  # ==========================================================================
-  ?session a nidm:Session .
-  { ?session dct:isPartOf ?project . }
-  UNION
-  { ?session dct:isPartOf ?project . }
+    # 2. Session
+    ?session a nidm:Session ;
+             dct:isPartOf ?project .
+    OPTIONAL { ?session rdfs:label ?sLabel . }
+    BIND(COALESCE(?sLabel, REPLACE(STR(?session), "^.*[/#]", "")) AS ?sessionLabel)
 
-  # A session is imaging if any of its member acquisition-objects carry a
-  # neuroimaging acquisition modality.
-  OPTIONAL {
-    ?memberActivity a nidm:Acquisition .
-    { ?memberActivity dct:isPartOf ?session . }
-    UNION
-    { ?memberActivity dct:isPartOf ?session . }
-    ?imgObj a nidm:AcquisitionObject ;
-            prov:wasGeneratedBy ?memberActivity ;
-            nidm:hadAcquisitionModality ?modType .
-    FILTER(?modType IN (nidm:MagneticResonanceImaging,
-                        nidm:PositronEmissionTomography,
-                        nidm:ComputedTomography,
-                        nidm:DiffusionWeightedImaging))
-  }
-  BIND(IF(BOUND(?modType), nb:ImagingSession, nb:PhenotypicSession) AS ?sessionType)
+    # 3. Subject Association (Strictly sio:Subject role)
+    ?acq a nidm:Acquisition ;
+         dct:isPartOf ?session ;
+         prov:qualifiedAssociation ?assoc .
+    ?assoc prov:agent ?person ;
+           prov:hadRole ?role .
+    FILTER(?role IN (sio:Subject, sio_res:Subject))
 
-  OPTIONAL { ?session dct:description ?sessionDescription . }
-  OPTIONAL { ?session dct:description ?sessionDescription . }
-  BIND(CONCAT("Session ", REPLACE(STR(?session), ".*[/#]([^/#]+)$", "$1")) AS ?sessionLabel)
+    OPTIONAL { ?person ndar:src_subject_id ?srcId . }
+    OPTIONAL { ?person rdfs:label ?pLabel . }
+    OPTIONAL { ?person foaf:givenName ?givenName . }
+    OPTIONAL { ?person foaf:familyName ?familyName . }
+    BIND(COALESCE(?srcId, ?pLabel, CONCAT(STR(?givenName), " ", STR(?familyName)), ?givenName, REPLACE(STR(?person), "^.*[/#]", "")) AS ?subjectLabel)
+    BIND(IRI(CONCAT("http://neurobagel.org/vocab/sub_", REPLACE(STR(?person), "^.*[/#]", ""))) AS ?subjectNode)
 
-  # Identify the subject Person from an Acquisition within this session that is
-  # associated with a participant (sio:Subject role).
-  OPTIONAL {
-    ?anyAcq a nidm:Acquisition .
-    { ?anyAcq dct:isPartOf ?session . }
-    UNION
-    { ?anyAcq dct:isPartOf ?session . }
-    ?anyAcq prov:qualifiedAssociation ?subjAssoc .
-    ?subjAssoc a prov:Association ;
-               prov:agent ?subjectPerson ;
-               prov:hadRole sio:Subject .
-  }
-  # Fall back to the Project association agent if no in-session subject found.
-  OPTIONAL {
-    ?project prov:qualifiedAssociation ?projAssoc .
-    ?projAssoc a prov:Association ;
-               prov:agent ?projPerson .
-  }
-  BIND(COALESCE(?subjectPerson, ?projPerson, ?session) AS ?subjectSource)
-  BIND(IRI(CONCAT("http://neurobagel.org/subject/",
-                  REPLACE(STR(?subjectSource), ".*[/#]([^/#]+)$", "$1"))) AS ?subject)
-
-  # ==========================================================================
-  # PHASE 4: Acquisitions and Images (Acquisitions part of the Session)
-  # ==========================================================================
-  ?acquisition a nidm:Acquisition .
-  { ?acquisition dct:isPartOf ?session . }
-  UNION
-  { ?acquisition dct:isPartOf ?session . }
-
-  # The AcquisitionObject (imaging/assessment) is generated by the acquisition.
-  ?acqObj a nidm:AcquisitionObject ;
-          prov:wasGeneratedBy ?acquisition .
-  OPTIONAL { ?acqObj nidm:hadAcquisitionModality ?modality . }
-  OPTIONAL { ?acqObj nfo:filename ?imagePath . }
-  OPTIONAL { ?acqObj nfo:fileName ?imagePath . }
-  OPTIONAL { ?acqObj nfo:format ?imageFormat . }
-  OPTIONAL { ?acqObj nidm:hadImageContrastType ?contrastType . }
-
-  BIND(IRI(CONCAT("http://neurobagel.org/image/",
-                  REPLACE(STR(?acqObj), ".*[/#]([^/#]+)$", "$1"))) AS ?image)
-  BIND(CONCAT("Image ",
-              REPLACE(STR(?acqObj), ".*[/#]([^/#]+)$", "$1")) AS ?imageLabel)
-  BIND(CONCAT("Acquisition ",
-              REPLACE(STR(?acquisition), ".*[/#]([^/#]+)$", "$1")) AS ?acqLabel)
-
-  # --- Sex / gender (ndar:gender / PersonalDataElement predicate on demographics) --
-  OPTIONAL {
-    ?acqObj ndar:gender ?sexValue .
-    BIND("gender" AS ?sexLabel)
-    BIND(IRI(CONCAT("http://neurobagel.org/sex/",
-                    REPLACE(STR(?subject), ".*[/#]([^/#]+)$", "$1"))) AS ?sex)
-  }
-  OPTIONAL {
-    ?acqObj ?genderDE ?sexValue .
-    ?genderDE a nidm:PersonalDataElement ;
-              rdfs:label ?sexLabel .
-    FILTER(CONTAINS(LCASE(STR(?sexLabel)), "gender") ||
-           CONTAINS(LCASE(STR(?sexLabel)), "sex"))
-    BIND(IRI(CONCAT("http://neurobagel.org/sex/",
-                    REPLACE(STR(?subject), ".*[/#]([^/#]+)$", "$1"))) AS ?sex)
-  }
-
-  # --- Age (ncicb:Age / PersonalDataElement predicate) ------------------------
-  OPTIONAL {
-    ?acqObj ncicb:Age ?ageValue .
-    BIND(IRI(CONCAT("http://neurobagel.org/age/",
-                    REPLACE(STR(?subject), ".*[/#]([^/#]+)$", "$1"))) AS ?age)
-  }
-  OPTIONAL {
-    ?acqObj ?ageDE ?ageValue .
-    ?ageDE a nidm:PersonalDataElement ;
-           rdfs:label "age" .
-    BIND(IRI(CONCAT("http://neurobagel.org/age/",
-                    REPLACE(STR(?subject), ".*[/#]([^/#]+)$", "$1"))) AS ?age)
-  }
-
-  # --- Diagnosis (PersonalDataElement predicate with label diagnosis/dx) ------
-  OPTIONAL {
-    ?acqObj ?dxDE ?dxValue .
-    ?dxDE a nidm:PersonalDataElement ;
-          rdfs:label ?dxLabel .
-    FILTER(CONTAINS(LCASE(STR(?dxLabel)), "diagnosis") ||
-           CONTAINS(LCASE(STR(?dxLabel)), "dx"))
-    OPTIONAL { ?dxDE nidm:isAbout ?dxCode . }
-    BIND(IRI(CONCAT("http://neurobagel.org/diagnosis/",
-                    REPLACE(STR(?subject), ".*[/#]([^/#]+)$", "$1"))) AS ?diagnosis)
-  }
-
-  # ==========================================================================
-  # PHASE 5: Assessments (instrument-based assessment AcquisitionObjects)
-  # ==========================================================================
-  OPTIONAL {
-    # An Assessment is a member AcquisitionObject that is an instrument
-    # assessment within this session.
-    ?assessment a ?assessType ;
-                prov:wasGeneratedBy ?assessActivity .
-    FILTER(?assessType IN (onli:assessment-instrument,
-                           nidm:AcquisitionObject))
-    ?assessActivity a onli:instrument-based-assessment ;
-                    dct:isPartOf ?session .
-    FILTER(?assessment = ?acqObj)
-    OPTIONAL { ?assessActivity rdfs:label ?assessTool . }
-    OPTIONAL { ?assessment rdfs:label ?assessLabel . }
-
-    # Assessment scores are dynamic predicates whose objects are literals,
-    # other than the demographics fields handled in Phase 4.
-    ?assessment ?scorePred ?assessScore .
-    FILTER(isLiteral(?assessScore))
-    FILTER(?scorePred NOT IN (nidm:AssessmentUsageType, ndar:gender, ncicb:Age))
-    BIND(STR(?scorePred) AS ?assessesConstruct)
-  }
-
-  # ==========================================================================
-  # PHASE 6: Pipelines / Derivatives
-  # ==========================================================================
-  OPTIONAL {
-    ?derivativeCollection a ?derivType .
-    FILTER(?derivType IN (nidm:FSStatsCollection, nidm:FSLStatsCollection,
-                          nidm:ANTSStatsCollection, nidm:Derivative))
-    OPTIONAL { ?derivativeCollection rdfs:label ?derivLabel . }
-
-    ?derivativeCollection prov:wasGeneratedBy ?derivActivity .
-    ?derivActivity a ?activityType .
-    FILTER(?activityType IN (nidm:FSLActivity, nidm:FreeSurferActivity,
-                             nidm:ANTSActivity, nidm:ProcessingActivity,
-                             prov:Activity))
-
-    # Software agent is linked via qualifiedAssociation with a software role
-    # (nidm:NIDM_0000164) or prov:wasAssociatedWith; it is typed SoftwareAgent.
-    { ?derivActivity prov:qualifiedAssociation ?swAssoc .
-      ?swAssoc a prov:Association ;
-               prov:agent ?softwareAgent ;
-               prov:hadRole nidm:NIDM_0000164 .
-      ?softwareAgent a prov:SoftwareAgent . }
-    UNION
-    { ?derivActivity prov:wasAssociatedWith ?softwareAgent .
-      ?softwareAgent a prov:SoftwareAgent . }
-
-    OPTIONAL { ?softwareAgent rdfs:label ?softwareLabel . }
-    OPTIONAL { ?softwareAgent sio:hasName ?softwareName . }
-    OPTIONAL { ?softwareAgent sio:hasVersion ?softwareVersion . }
-    OPTIONAL { ?softwareAgent nidm:NIDM_0000164 ?toolNs . }
-
-    BIND(IRI(CONCAT("http://neurobagel.org/pipeline/",
-                    REPLACE(STR(?derivActivity), ".*[/#]([^/#]+)$", "$1"))) AS ?pipeline)
-    BIND(COALESCE(?softwareLabel, ?softwareName, ?toolNs, "Unknown Pipeline") AS ?pipelineLabel)
-    BIND(COALESCE(?softwareName, ?toolNs, "Unknown") AS ?pipelineName)
-    BIND(?softwareVersion AS ?pipelineVersion)
-
-    # Parameters: literal-valued properties on the activity, excluding
-    # structural PROV/RDF/DCTERMS metadata.
+    # 4. Phenotypic data
     OPTIONAL {
-      ?derivActivity ?paramPred ?paramValue .
-      FILTER(isLiteral(?paramValue))
-      FILTER(?paramPred NOT IN (dct:description, dct:isPartOf, prov:qualifiedAssociation,
-                                rdf:type, prov:wasGeneratedBy, prov:wasAssociatedWith))
-      OPTIONAL { ?paramPred rdfs:label ?paramLabelRaw . }
-      BIND(COALESCE(?paramLabelRaw, REPLACE(STR(?paramPred), "^.*[/#]", "")) AS ?paramLabel)
-      BIND(IRI(CONCAT("http://neurobagel.org/parameter/",
-                      REPLACE(STR(?paramPred), "[/#:]([^/#:]+)$", "$1"))) AS ?param)
+        ?phenoAcq a nidm:Acquisition ;
+                  dct:isPartOf ?session ;
+                  prov:qualifiedAssociation ?phenoAssoc .
+        ?phenoAssoc prov:agent ?person ;
+                    prov:hadRole ?phenoRole .
+        FILTER(?phenoRole IN (sio:Subject, sio_res:Subject))
+        ?phenoObj prov:wasGeneratedBy ?phenoAcq .
+
+        OPTIONAL { ?phenoObj ncicb:Age ?ageVal . }
+        OPTIONAL {
+            ?phenoObj ndar:gender ?genderRaw .
+            BIND(IF(LCASE(STR(?genderRaw)) IN ("male", "m", "1"), snomed:248153007,
+                 IF(LCASE(STR(?genderRaw)) IN ("female", "f", "2"), snomed:248152002,
+                 snomed:32570681000036106)) AS ?sexTermNode)
+        }
+        OPTIONAL {
+            ?phenoObj a onli:assessment-instrument .
+            FILTER(!BOUND(?ageVal) && !BOUND(?genderRaw))
+            BIND(snomed:assessment AS ?assessTermNode)
+        }
+        BIND(IRI(CONCAT("http://neurobagel.org/vocab/ses_pheno_", REPLACE(STR(?person), "^.*[/#]", ""), "_", REPLACE(STR(?session), "^.*[/#]", ""))) AS ?phenoSessionNode)
     }
 
-    ?derivativeCollection ?measPred ?measValue .
-    ?measPred a ?measPredType .
-    FILTER(?measPredType IN (fs:DataElement, fsl:DataElement,
-                             ants:DataElement, nidm:DataElement))
-    ?measPred rdfs:label ?measLabel .
-    OPTIONAL { ?measPred nidm:hasUnit ?measUnit . }
-    OPTIONAL { ?measPred nidm:isAbout ?measStructure . }
-    OPTIONAL { ?measPred nidm:hasLaterality ?measLaterality . }
+    # 5. Imaging data
+    OPTIONAL {
+        ?imgAcq a nidm:Acquisition ;
+                dct:isPartOf ?session ;
+                prov:qualifiedAssociation ?imgAssoc .
+        ?imgAssoc prov:agent ?person ;
+                  prov:hadRole ?imgRole .
+        FILTER(?imgRole IN (sio:Subject, sio_res:Subject))
+        ?imgObj prov:wasGeneratedBy ?imgAcq .
+        ?imgObj nidm:hadAcquisitionModality ?modality .
 
-    BIND(IRI(CONCAT("http://neurobagel.org/measurement/",
-                    REPLACE(STR(?measPred), ".*[/#]([^/#]+)$", "$1"))) AS ?measurement)
-  }
+        OPTIONAL { ?imgObj nidm:hadImageContrastType ?contrastVal . }
+        BIND(COALESCE(?contrastVal, nidm:T1Weighted) AS ?contrastTermNode)
+        BIND(IRI(CONCAT("http://neurobagel.org/vocab/acq_", REPLACE(STR(?imgAcq), "^.*[/#]", ""))) AS ?acqNode)
+        BIND(IRI(CONCAT("http://neurobagel.org/vocab/ses_img_", REPLACE(STR(?person), "^.*[/#]", ""), "_", REPLACE(STR(?session), "^.*[/#]", ""))) AS ?imagingSessionNode)
+    }
 }
